@@ -1,0 +1,5 @@
+*.DS_Store
+*.out
+bin
+rost_build
+rost_build.dSYM/

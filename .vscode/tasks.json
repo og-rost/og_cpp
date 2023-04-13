@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+  {
+    "label": "buildcpp",
+    "type": "shell",
+    "command": "g++-12",
+    "args": [
+      "-std=c++20",
+      "-g",
+      "${file}",
+      "-o",
+      "${workspaceFolder}/rost_build",
+      "-I",
+      "/usr/local/Cellar/boost/1.80.0/include/"
+    ],
+    "problemMatcher": [],
+    "group": {
+      "kind": "build",
+      "isDefault": true
+    }
+  },
+  {
+    "label": "runcpp",
+    "type": "shell",
+    "command": "${workspaceFolder}/rost_build",
+    "args": [],
+    "options": {
+      "cwd": "${workspaceFolder}"
+    },
+    "group": {
+      "kind": "build",
+      "isDefault": true
+    }
+  }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${default}",
+                "/usr/local/Cellar/boost/1.81.0_1/include/",
+                "/usr/local/include/c++/12/"
+            ],
+            "defines": [],
+            "configurationProvider": "ms-vscode.cpptools",
+            "cStandard": "c17",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "macos-clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/local/Cellar/boost/1.80.0/include/"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}

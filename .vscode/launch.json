@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+          "name": "Launch (lldb)",
+          "type": "cppdbg",
+          "request": "launch",
+          "program": "${workspaceFolder}/rost_build",
+          "args": [],
+          "stopAtEntry": false,
+          "cwd": "${workspaceFolder}",
+          "environment": [],
+          "externalConsole": true,
+          "MIMode": "lldb"
+        }
+    ]
+}

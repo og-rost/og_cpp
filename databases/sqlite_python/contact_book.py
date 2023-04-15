@@ -2,216 +2,182 @@ from tkinter import *
 import sqlite3
 
 
-query_results = []
+class ContactBook:
+
+    def __init__(self):
+        try:
+            self.data_base = sqlite3.connect("contact_book.db")
+            self.cursor = self.data_base.cursor()
+            self.cursor.execute("""CREATE TABLE contacts (
+                                name text,
+                                surname text,
+                                address text,
+                                phone_number text
+                                )""")
+            self.root = Tk()
+            self.contact_rows = []
+            self.initGUI()
+            self.root.mainloop()
+        finally:
+            self.data_base.close()
+
+    def __exit__(self):
+        self.data_base.close()
+
+    def initGUI(self):
+        self.root.title("OG")
+        self.root.geometry("400x600")
+
+        self.name = Entry(self.root, width=30)
+        self.name.grid(row=0, column=1, padx=20, pady=(10, 0))
+        name_label = Label(self.root, text="Name")
+        name_label.grid(row=0, column=0, pady=(10, 0))
+
+        self.surname = Entry(self.root, width=30)
+        self.surname.grid(row=1, column=1)
+        surname_label = Label(self.root, text="Surname")
+        surname_label.grid(row=1, column=0)
+
+        self.address = Entry(self.root, width=30)
+        self.address.grid(row=2, column=1)
+        address_label = Label(self.root, text="Address")
+        address_label.grid(row=2, column=0)
+
+        self.phone_number = Entry(self.root, width=30)
+        self.phone_number.grid(row=3, column=1)
+        phone_number_label = Label(self.root, text="Phone Number")
+        phone_number_label.grid(row=3, column=0)
+
+        self.select = Entry(self.root, width=30)
+        self.select.grid(row=6, column=1, pady=5)
+        select_label = Label(self.root, text="Select ID")
+        select_label.grid(row=6, column=0, pady=5)
+
+        submit_btn = Button(self.root, text="Add Record", command=self.submit)
+        submit_btn.grid(row=4, column=0, padx=10, columnspan=2, pady=10, ipadx=100)
+
+        query_btn = Button(self.root, text="Show Records", command=self.query)
+        query_btn.grid(row=5, column=0, padx=10, columnspan=2, pady=10, ipadx=137)
+
+        remove_btn = Button(self.root, text="Delete Record", command=self.remove)
+        remove_btn.grid(row=7, column=0, padx=10, columnspan=2, pady=10, ipadx=136)
+
+        edit_btn = Button(self.root, text="Edit Record", command=self.edit)
+        edit_btn.grid(row=8, column=0, padx=10, columnspan=2, pady=10, ipadx=143)
+
+    def initEditorGUI(self):
+        self.root.withdraw()
+        self.editor = Tk()
+        self.editor.title("Edit contact")
+        self.editor.geometry("400x300")
+
+        self._name = Entry(self.editor, width=30)
+        self._name.grid(row=0, column=1, padx=20, pady=(10, 0))
+        _name_label = Label(self.editor, text="Name")
+        _name_label.grid(row=0, column=0, pady=(10, 0))
+
+        self._surname = Entry(self.editor, width=30)
+        self._surname.grid(row=1, column=1)
+        _surname_label = Label(self.editor, text="Surname")
+        _surname_label.grid(row=1, column=0)
+
+        self._address = Entry(self.editor, width=30)
+        self._address.grid(row=2, column=1)
+        _address_label = Label(self.editor, text="Address")
+        _address_label.grid(row=2, column=0)
+
+        self._phone_number = Entry(self.editor, width=30)
+        self._phone_number.grid(row=3, column=1)
+        _phone_number_label = Label(self.editor, text="Phone Number")
+        _phone_number_label.grid(row=3, column=0)
+
+        _save_btn = Button(self.editor, text="Save Contact", command=self.update)
+        _save_btn.grid(row=4, column=0, padx=10, pady=10, columnspan=2, ipadx=145)
+
+    def submit(self):
+        try:
+            self.cursor.execute("INSERT INTO contacts VALUES (:name, :surname, :add, :num)",
+                                {
+                                   'name': self.name.get(),
+                                   'surname': self.surname.get(),
+                                   'add': self.address.get(),
+                                   'num': self.phone_number.get()
+                                })
+        except sqlite3.OperationalError:
+            return
+
+        self.data_base.commit()
+        self.name.delete(0, END)
+        self.surname.delete(0, END)
+        self.address.delete(0, END)
+        self.phone_number.delete(0, END)
+
+    def query(self):
+        for label in self.contact_rows:
+            label.destroy()
+
+        try:
+            self.cursor.execute("SELECT *, oid FROM contacts")
+        except sqlite3.OperationalError:
+            return
+
+        records = self.cursor.fetchall()
+        r = 12
+        for item in records:
+            my_str = str(item[4]) + ". " + item[0] + " " + item[1] + " " + item[2] + " " + item[3]
+            my_label = Label(self.root, text=my_str)
+            my_label.grid(row=r, column=0, columnspan=2)
+            self.contact_rows.append(my_label)
+            r += 1
+
+    def update(self):
+        selected_id = self.select.get()
+        try:
+            self.cursor.execute("""UPDATE contacts SET
+                              name = :first,
+                              surname = :last,
+                              address = :add,
+                              phone_number = :num
+                              WHERE oid = :oid""",
+
+                                {
+                                 'first': self._name.get(),
+                                 'last': self._surname.get(),
+                                 'add': self._address.get(),
+                                 'num': self._phone_number.get(),
+                                 'oid': selected_id
+                                })
+        except sqlite3.OperationalError:
+            return
+
+        self.data_base.commit()
+        self.select.delete(0, END)
+        self.editor.destroy()
+        self.root.deiconify()
+
+    def edit(self):
+        selected_id = self.select.get()
+        try:
+            self.cursor.execute("SELECT * FROM contacts WHERE oid = " + selected_id)
+            records = self.cursor.fetchall()
+        except sqlite3.OperationalError:
+            return
+
+        self.initEditorGUI()
+        self._name.insert(0, records[0][0])
+        self._surname.insert(0, records[0][1])
+        self._address.insert(0, records[0][2])
+        self._phone_number.insert(0, records[0][3])
+
+    def remove(self):
+        try:
+            self.cursor.execute("DELETE from contacts WHERE oid = " + self.select.get())
+        except sqlite3.OperationalError:
+            return
+        self.select.delete(0, END)
+        self.data_base.commit()
 
 
-def initMain():
-    global conn
-    global cursor
+if __name__ == "__main__":
+    cb = ContactBook()
 
-    conn = sqlite3.connect('contact_book.db')
-    cursor = conn.cursor()
-
-
-def initGUI():
-    global f_name
-    global l_name
-    global city
-    global number
-    global select_box
-
-    global root
-    root = Tk()
-    root.title('OG')
-    # root.iconbitmap('path to icon')
-    root.geometry("400x600")
-
-    f_name = Entry(root, width=30)
-    f_name.grid(row=0, column=1, padx=20, pady=(10, 0))
-    l_name = Entry(root, width=30)
-    l_name.grid(row=1, column=1)
-    city = Entry(root, width=30)
-    city.grid(row=2, column=1)
-    number = Entry(root, width=30)
-    number.grid(row=3, column=1)
-
-    select_box = Entry(root, width=30)
-    select_box.grid(row=9, column=1, pady=5)
-
-    f_name_label = Label(root, text="First Name")
-    f_name_label.grid(row=0, column=0, pady=(10, 0))
-    l_name_label = Label(root, text="Last Name")
-    l_name_label.grid(row=1, column=0)
-    city_label = Label(root, text="City")
-    city_label.grid(row=2, column=0)
-    number_label = Label(root, text="Phone Number")
-    number_label.grid(row=3, column=0)
-
-    select_box_label = Label(root, text="Select ID")
-    select_box_label.grid(row=9, column=0, pady=5)
-
-
-def initButtons():
-    submit_btn = Button(root, text="Add Record To Database", command=submit)
-    submit_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
-
-    query_btn = Button(root, text="Show Records", command=query)
-    query_btn.grid(row=7, column=0, columnspan=2, pady=10, padx=10, ipadx=137)
-
-    delete_btn = Button(root, text="Delete Record", command=delete)
-    delete_btn.grid(row=10, column=0, columnspan=2, pady=10, padx=10, ipadx=136)
-
-    edit_btn = Button(root, text="Edit Record", command=edit)
-    edit_btn.grid(row=11, column=0, columnspan=2, pady=10, padx=10, ipadx=143)
-
-
-def initEditorGUI():
-    root.withdraw()
-    global editor
-    editor = Tk()
-    editor.title('Update A Record')
-    editor.geometry("400x300")
-
-    global f_name_editor
-    global l_name_editor
-    global city_editor
-    global number_editor
-
-    f_name_editor = Entry(editor, width=30)
-    f_name_editor.grid(row=0, column=1, padx=20, pady=(10, 0))
-    l_name_editor = Entry(editor, width=30)
-    l_name_editor.grid(row=1, column=1)
-    city_editor = Entry(editor, width=30)
-    city_editor.grid(row=2, column=1)
-    number_editor = Entry(editor, width=30)
-    number_editor.grid(row=3, column=1)
-
-    f_name_label = Label(editor, text="First Name")
-    f_name_label.grid(row=0, column=0, pady=(10, 0))
-    l_name_label = Label(editor, text="Last Name")
-    l_name_label.grid(row=1, column=0)
-    city_label = Label(editor, text="City")
-    city_label.grid(row=2, column=0)
-    number_label = Label(editor, text="Phone Number")
-    number_label.grid(row=3, column=0)
-
-
-def update(record_id: int):
-    try:
-        cursor.execute("""UPDATE contacts SET
-            first_name = :first,
-            last_name = :last,
-            city = :city,
-            number = :number
-
-            WHERE oid = :oid""",
-                       {
-                        'first': f_name_editor.get(),
-                        'last': l_name_editor.get(),
-                        'city': city_editor.get(),
-                        'number': number_editor.get(),
-                        'oid': record_id
-                       })
-    except sqlite3.OperationalError:
-        return
-
-    conn.commit()
-
-    editor.destroy()
-    root.deiconify()
-
-
-def edit():
-    record_id = select_box.get()
-    select_box.delete(0, END)
-    try:
-        cursor.execute("SELECT * FROM contacts WHERE oid = " + record_id)
-        records = cursor.fetchall()
-    except sqlite3.OperationalError:
-        return
-
-    initEditorGUI()
-
-    for record in records:
-        f_name_editor.insert(0, record[0])
-        l_name_editor.insert(0, record[1])
-        city_editor.insert(0, record[2])
-        number_editor.insert(0, record[3])
-
-    edit_btn = Button(editor, text="Save Record", command=lambda: update(record_id))
-    edit_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=145)
-
-
-def delete():
-    try:
-        cursor.execute("DELETE from contacts WHERE oid = " + select_box.get())
-    except sqlite3.OperationalError:
-        return
-
-    conn.commit()
-
-    select_box.delete(0, END)
-
-
-def submit():
-    try:
-        cursor.execute("INSERT INTO contacts VALUES (:f_name, :l_name, :city, :number)",
-                       {
-                        'f_name': f_name.get(),
-                        'l_name': l_name.get(),
-                        'city': city.get(),
-                        'number': number.get()
-                       })
-    except sqlite3.OperationalError:
-        return
-
-    conn.commit()
-
-    f_name.delete(0, END)
-    l_name.delete(0, END)
-    city.delete(0, END)
-    number.delete(0, END)
-
-
-def query():
-    for q in query_results:
-        q.destroy()
-    try:
-        cursor.execute("SELECT *, oid FROM contacts")
-    except sqlite3.OperationalError:
-        return
-
-    records = cursor.fetchall()
-
-    i = 0
-    for record in records:
-        print_records = str(record[4]) + ": " + str(record[0]) + " " + str(record[1]) + " " + "\t\t" + str(record[2]) + "\t" + str(record[3])
-
-        query_label = Label(root, text=print_records)
-        query_label.grid(row=12 + i, column=0, columnspan=2)
-        query_results.append(query_label)
-        i += 1
-
-    conn.commit()
-
-
-'''
-conn = sqlite3.connect('contact_book.db')
-c = conn.cursor()
-
-c.execute("""CREATE TABLE contacts (
-        first_name text,
-        last_name text,
-        city text,
-        number text
-        )""")
-
-'''
-
-try:
-    initMain()
-    initGUI()
-    initButtons()
-    root.mainloop()
-finally:
-    conn.close()

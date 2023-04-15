@@ -1,5 +1,8 @@
 #include <iostream>
 
+// Metafunctions are functions that operate on types, values, or other metafunctions at compile-time.
+// They are typically implemented as class templates with a nested typedef or a static constexpr member.
+
 template <unsigned int N>
 struct Factorial {
     static constexpr unsigned long long value = N * Factorial<N - 1>::value;

@@ -23,19 +23,19 @@ void simple_do_once() {
 }
  
 void may_throw_function(bool do_throw) {
-  if (do_throw) {
-    std::cout << "throw: call_once will retry\n"; // this may appear more than once
-    throw std::exception();
-  }
-  std::cout << "Didn't throw, call_once will not attempt again\n"; // guaranteed once
+    if (do_throw) {
+        std::cout << "throw: call_once will retry\n"; // this may appear more than once
+        throw std::exception();
+    }
+    std::cout << "Didn't throw, call_once will not attempt again\n"; // guaranteed once
 }
  
 void do_once(bool do_throw) {
-  try {
-    std::call_once(flag2, may_throw_function, do_throw);
-  }
-  catch (...) {
-  }
+    try {
+        std::call_once(flag2, may_throw_function, do_throw);
+    }
+        catch (...) {
+    }
 }
  
 int main() {

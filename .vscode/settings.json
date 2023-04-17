@@ -63,7 +63,8 @@
         "chrono": "cpp",
         "syncstream": "cpp",
         "stack": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "optional": "cpp"
     },
-    "terminal.integrated.shell.windows": "cmd.exe"
+    "C_Cpp.default.cppStandard": "c++20"
 }

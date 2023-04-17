@@ -12,7 +12,7 @@
       "-o",
       "${workspaceFolder}/rost_build",
       "-I",
-      "/usr/local/Cellar/boost/1.80.0/include/"
+      "/usr/local/Cellar/boost/1.81.0_1/include/"
     ],
     "problemMatcher": [],
     "group": {

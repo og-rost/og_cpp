@@ -6,7 +6,7 @@ public:
     void printFullDate() {
         time_t t = time(0);
         struct tm* now = localtime(&t);
-        std::cout<<asctime(now);
+        std::cout << asctime(now);
     }
 
     void printTime() {

@@ -34,11 +34,11 @@ shared_ptr<T>::shared_ptr(T* ptr = nullptr) : data(ptr) {
     else ref = new size_t(0);
 }
 
-    template <typename T>
+template <typename T>
 shared_ptr<T>::shared_ptr(const shared_ptr<T>& rhs) 
     : data(rhs.data), ref(rhs.ref) {
         ++*ref;
-    }
+}
 
 template <typename T>
 shared_ptr<T>::~shared_ptr() {

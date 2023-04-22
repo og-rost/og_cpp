@@ -33,6 +33,8 @@ public:
         if (!_isDirected) {
             vertex2->removeEdge(vertex1);
         }
+
+        // TODO update vertexes connected to this edge
     }
 
     void removeVertex(Vertex* vertex) {
@@ -42,6 +44,8 @@ public:
                 return;
             }
         }
+
+        // TODO remove also edges connected to this vertex
     }
 
     std::list<Vertex*> getVertices() {

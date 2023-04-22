@@ -1,6 +1,6 @@
 /*********** Shared_ptr ***********/
 
-// 1. When a pointer outlives pointee: danling pointer
+// 1. When a pointer outlives pointee: dangling pointer
 // 2. When a pointee outlives all its pointers: resource leak
 //
 // Smart Pointers: Make sure the lifetime of a pointer and pointee match.

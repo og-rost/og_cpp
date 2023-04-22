@@ -5,7 +5,8 @@
             "includePath": [
                 "${default}",
                 "/usr/local/Cellar/boost/1.81.0_1/include/",
-                "/usr/local/include/c++/12/"
+                "/usr/local/include/c++/12/",
+                "/usr/local/Cellar/gcc/12.2.0/include/c++/12/x86_64-apple-darwin21"
             ],
             "defines": [],
             "configurationProvider": "ms-vscode.cpptools",

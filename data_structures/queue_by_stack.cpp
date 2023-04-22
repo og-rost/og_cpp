@@ -11,7 +11,6 @@ public:
 };
 
 void queue_by_stack::push(const int& val) {
-	std::cout<<"push worked"<<std::endl;
 	s1.push(val);
 }
 
@@ -24,7 +23,6 @@ void queue_by_stack::pop() {
 		}
 	}
 	s2.pop();
-	std::cout<<"pop worked"<<std::endl;
 }
 
  int& queue_by_stack::front() {
@@ -34,7 +32,6 @@ void queue_by_stack::pop() {
 			s1.pop();
 		}
 	}
-	std::cout<<"front worked"<<std::endl;
 	return s2.top();
 }
 

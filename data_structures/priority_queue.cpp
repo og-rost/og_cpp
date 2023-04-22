@@ -54,8 +54,8 @@ int main() {
 	
 	build(vec, vec.size());     
 	std::cout << max(vec) << std::endl;
-	std::cout << extract_max(vec) << endl;
-	std::cout << max(vec) << endl;
+	std::cout << extract_max(vec) << std::endl;
+	std::cout << max(vec) << std::endl;
 	for (int i : vec) 
 		std::cout << i << " ";
 	std::cout << std::endl;
